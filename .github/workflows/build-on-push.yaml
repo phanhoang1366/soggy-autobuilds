@@ -19,7 +19,10 @@ jobs:
 
       - name: Move Soggy src
         shell: bash
-        run: mv ./soggy/* .
+        run: |
+          ls -l
+          pwd
+          mv ./soggy/* .
           
       - name: install dependencies (vcpkg)
         run: vcpkg install protobuf lua[cpp]:x64-windows
