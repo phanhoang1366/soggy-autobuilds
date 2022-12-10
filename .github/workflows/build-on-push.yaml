@@ -16,15 +16,16 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
+
+      - name: Move Soggy src
+        shell: bash
+        run: mv -v ./soggy/* .
           
       - name: install dependencies (vcpkg)
         run: vcpkg install protobuf lua[cpp]:x64-windows
         
-      - name: Move Soggy src
-        shell: bash
-        run: mv soggy/* .
-        
-      - name: Build
-        run: |
-          cmake -B build -G "Unix Makefiles"
-          cmake --build build -j8
+      - name: Prepare for build
+        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          
+      - name: Build time
+        run: cmake --build build -j8
