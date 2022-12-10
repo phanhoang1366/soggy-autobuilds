@@ -8,13 +8,12 @@ None, sorry :(
 
 #### Schedule
 
-Release builds: Every time [Soggy](https://github.com/LDAsuku/soggy) updates or I update the repository.\
+Release builds: Every time [Soggy](https://github.com/LDAsuku/soggy) updates or I update the repository.
 
 #### Release Retention Policy
-Release builds are kept for two years.\
+Release builds are kept for two years.
 
-Only soggy.exe is included.
-
+Only soggy.exe is included.\
 All builds are static.
 
 Uses [GitHub Actions](https://github.com/features/actions) to automatically compile Soggy.
