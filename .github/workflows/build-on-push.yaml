@@ -16,16 +16,16 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
-
-      - name: Move Soggy src
-        shell: powershell
-        run: Move-Item -Path .\soggy\* -Destination .
           
       - name: install dependencies (vcpkg)
         run: vcpkg install protobuf lua[cpp]:x64-windows
         
       - name: Prepare for build
-        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+        run: |
+          cd soggy
+          cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
           
       - name: Build time
-        run: cmake --build build -j8
+        run: |
+          cd soggy
+          cmake --build build -j8
