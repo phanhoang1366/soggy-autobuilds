@@ -1,0 +1,3 @@
+[submodule "soggy"]
+	path = soggy
+	url = https://github.com/LDAsuku/soggy
