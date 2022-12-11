@@ -28,7 +28,7 @@ jobs:
         - name: Prepare for build
           run: |
             cd soggy
-            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release"
 
         - name: Build time
           run: |
@@ -41,11 +41,11 @@ jobs:
             echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
             echo date-time-tag=$(date +'%Y-%m-%d-%H-%M') >> $GITHUB_OUTPUT
 
-        - name: Upload Soggy
+        - name: Upload Soggy (debug, idk why)
           uses: actions/upload-artifact@v3
           with:
             name: soggy-exec
-            path: soggy/build/Release/soggy.exe
+            path: soggy/build/Debug/soggy.exe
 
     outputs:
         date-time-before: ${{ steps.date-time-before.outputs.date-time }}
