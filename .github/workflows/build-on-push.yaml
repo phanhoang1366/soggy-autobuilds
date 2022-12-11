@@ -28,24 +28,25 @@ jobs:
         - name: Prepare for build
           run: |
             cd soggy
-            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release"
+            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>"
 
         - name: Build time
           run: |
             cd soggy
-            cmake --build build -j8
+            cmake --build build -j8 --config Release
 
         - name: Get current date & time after build
           id: date-time-after
+          shell: bash
           run: |
             echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
             echo date-time-tag=$(date +'%Y-%m-%d-%H-%M') >> $GITHUB_OUTPUT
 
-        - name: Upload Soggy (debug, idk why)
+        - name: Upload Soggy
           uses: actions/upload-artifact@v3
           with:
             name: soggy-exec
-            path: soggy/build/Debug/soggy.exe
+            path: soggy/build/Release/soggy.exe
 
     outputs:
         date-time-before: ${{ steps.date-time-before.outputs.date-time }}
@@ -97,7 +98,7 @@ jobs:
         run: |
           gh release create "m-${{ needs.build.outputs.date-time-after-tag }}" \
           "soggy_full.7z" \
-          -n "Soggy built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
+          -n "Soggy (WIP) built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
           -t "${{ needs.build.outputs.date-time-after }}"
         env:
           GITHUB_TOKEN: ${{ github.token }}
