@@ -34,8 +34,8 @@ jobs:
           run: |
             cd soggy
             cmake --build build -j8 --config Release
-            ls build/Release/
-            7z a soggy_exec_only.7z build/Release/* -mx9
+            cd build/Release/
+            7z a soggy_exec_only.7z * -mx9
 
         - name: Get current date & time after build
           id: date-time-after
@@ -76,9 +76,8 @@ jobs:
           wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy.py
           wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy_config.py
           git clone https://codeberg.org/LDA_suku/soggy_resources.git resources
-          wget https://cdn.discordapp.com/attachments/811549270183510026/1051356294432440371/dlls.7z
           
-      - name: 7-Zip Soggy Full version
+      - name: Compress with  7-Zip Soggy Full version
         run: 7z a soggy_full.7z * -mx9
       
       - name: Upload Soggy full version
