@@ -1,6 +1,6 @@
 # soggy-autobuilds
 
-[Soggy](https://github.com/LDAsuku/soggy) (experimental server emulator) static build on Windows x64 (targetting Windows 10 or newer)
+[Soggy](https://github.com/LDAsuku/soggy) (experimental server emulator) build on Windows x64 (targetting Windows 10 or newer)
 
 [Downloads](https://github.com/phanhoang1366/soggy-autobuilds/releases)
 
