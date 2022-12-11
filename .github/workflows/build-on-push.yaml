@@ -35,6 +35,7 @@ jobs:
             cd soggy
             cmake --build build -j8 --config Release
             ls build/Release/
+            7z a soggy_exec_only.7z build/Release/* -mx9
 
         - name: Get current date & time after build
           id: date-time-after
@@ -47,7 +48,7 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: soggy-exec
-            path: soggy/build/Release/soggy.exe
+            path: soggy/soggy_exec_only.7z
 
     outputs:
         date-time-before: ${{ steps.date-time-before.outputs.date-time }}
@@ -64,6 +65,8 @@ jobs:
           
       - name: Download all dependencies
         run: |
+          7z x soggy_exec_only.7z
+          rm soggy_exec_only.7z
           wget https://github.com/LDAsuku/soggy/raw/mistress/dispatch.py
           wget https://github.com/LDAsuku/soggy/raw/mistress/soggy_cat.png
           echo "mitmdump.exe -p 8080 -s \"proxy.py\"" >> proxy.bat
@@ -74,8 +77,6 @@ jobs:
           wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy_config.py
           git clone https://codeberg.org/LDA_suku/soggy_resources.git resources
           wget https://cdn.discordapp.com/attachments/811549270183510026/1051356294432440371/dlls.7z
-          7z x dlls.7z
-          rm dlls.7z
           
       - name: 7-Zip Soggy Full version
         run: 7z a soggy_full.7z * -mx9
@@ -83,7 +84,7 @@ jobs:
       - name: Upload Soggy full version
         uses: actions/upload-artifact@v3
         with:
-          name: soggy-7z
+          name: soggy-7z-full
           path: soggy_full.7z
           
   release:
@@ -93,12 +94,18 @@ jobs:
       - name: Download Soggy archive
         uses: actions/download-artifact@v3
         with:
-          name: soggy-7z
+          name: soggy-7z-full
+      
+      - name: Download Soggy executable only
+        uses: actions/download-artifact@v3
+        with:
+          name: soggy-exec
 
       - name: Release
         run: |
           gh release create "m-${{ needs.build.outputs.date-time-after-tag }}" \
           "soggy_full.7z" \
+          "soggy_soggy_exec_only.7z" \
           -n "Soggy (WIP) built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
           -t "${{ needs.build.outputs.date-time-after }}"
         env:
