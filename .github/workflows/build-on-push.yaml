@@ -11,21 +11,94 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+        - name: Checkout repository
+          uses: actions/checkout@v3
+          with:
+            submodules: true
+            persist-credentials: false
+            
+        - name: Get current date & time before build
+          id: date-time-before
+          shell: bash
+          run: echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
+
+        - name: Install dependencies (vcpkg)
+          run: vcpkg install protobuf lua[cpp]:x64-windows
+
+        - name: Prepare for build
+          run: |
+            cd soggy
+            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+
+        - name: Build time
+          run: |
+            cd soggy
+            cmake --build build -j8
+
+        - name: Get current date & time after build
+          id: date-time-after
+          run: |
+            echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
+            echo date-time-tag=$(date +'%Y-%m-%d-%H-%M') >> $GITHUB_OUTPUT
+
+        - name: Upload Soggy
+          uses: actions/upload-artifact@v3
+          with:
+            name: soggy-exec
+            path: soggy/build/Release/soggy.exe
+
+    outputs:
+        date-time-before: ${{ steps.date-time-before.outputs.date-time }}
+        date-time-after: ${{ steps.date-time-after.outputs.date-time }}
+        date-time-after-tag: ${{ steps.date-time-after.outputs.date-time-tag }}
+  archive:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Soggy build
+        uses: actions/download-artifact@v3
         with:
-          submodules: true
-          persist-credentials: false
+          name: soggy-exec
           
-      - name: install dependencies (vcpkg)
-        run: vcpkg install protobuf lua[cpp]:x64-windows
-        
-      - name: Prepare for build
+      - name: Download all dependencies
         run: |
-          cd soggy
-          cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          wget https://github.com/LDAsuku/soggy/raw/mistress/dispatch.py
+          wget https://github.com/LDAsuku/soggy/raw/mistress/soggy_cat.png
+          echo "mitmdump.exe -p 8080 -s \"proxy.py\"" >> proxy.bat
+          wget https://snapshots.mitmproxy.org/9.0.1/mitmproxy-9.0.1-windows.zip
+          unzip mitmproxy-9.0.1-windows.zip mitmdump.exe 
+          rm mitmproxy-9.0.1-windows.zip
+          wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy.py
+          wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy_config.py
+          git clone https://codeberg.org/LDA_suku/soggy_resources.git resources
+          wget https://cdn.discordapp.com/attachments/811549270183510026/1051356294432440371/dlls.7z
+          7z x dlls.7z
+          rm dlls.7z
           
-      - name: Build time
+      - name: 7-Zip Soggy Full version
+        run: 7z a soggy_full.7z * -mx9
+      
+      - name: Upload Soggy full version
+        uses: actions/upload-artifact@v3
+        with:
+          name: soggy-7z
+          path: soggy_full.7z
+          
+  release:
+    needs: [build, archive]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Soggy archive
+        uses: actions/download-artifact@v3
+        with:
+          name: soggy-7z
+
+      - name: Release
         run: |
-          cd soggy
-          cmake --build build -j8
+          gh release create "m-${{ needs.build.outputs.date-time-after-tag }}" \
+          "soggy_full.7z" \
+          -n "Soggy built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
+          -t "${{ needs.build.outputs.date-time-after }}"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
