@@ -28,12 +28,13 @@ jobs:
         - name: Prepare for build
           run: |
             cd soggy
-            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>"
+            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 
         - name: Build time
           run: |
             cd soggy
             cmake --build build -j8 --config Release
+            ls build/Release/
 
         - name: Get current date & time after build
           id: date-time-after
