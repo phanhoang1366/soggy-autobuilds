@@ -105,7 +105,7 @@ jobs:
           gh release create "m-${{ needs.build.outputs.date-time-after-tag }}" \
           "soggy_full.7z" \
           "soggy_exec_only.7z" \
-          -n "Soggy (WIP) built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
+          -n "Soggy built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
           -t "${{ needs.build.outputs.date-time-after }}"
         env:
           GITHUB_TOKEN: ${{ github.token }}
