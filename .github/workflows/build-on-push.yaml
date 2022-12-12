@@ -34,8 +34,11 @@ jobs:
           run: |
             cd soggy
             cmake --build build -j8 --config Release
+            cmake --build build -j8 --config Debug
             cd build/Release/
-            7z a soggy_exec_only.7z * -mx9
+            7z a soggy_exec_rel.7z * -mx9
+            cd ../Debug/
+            7z a soggy_exec_debug.7z * -mx9
 
         - name: Get current date & time after build
           id: date-time-after
@@ -44,67 +47,118 @@ jobs:
             echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
             echo date-time-tag=$(date +'%Y-%m-%d-%H-%M') >> $GITHUB_OUTPUT
 
-        - name: Upload Soggy
+        - name: Upload Soggy Release
           uses: actions/upload-artifact@v3
           with:
-            name: soggy-exec
-            path: soggy/build/Release/soggy_exec_only.7z
+            name: soggy-exec-rel
+            path: soggy/build/Release/soggy_exec_rel.7z
+            
+        - name: Upload Soggy Debug
+          uses: actions/upload-artifact@v3
+          with:
+            name: soggy-exec-debug
+            path: soggy/build/Debug/soggy_exec_debug.7z
 
     outputs:
         date-time-before: ${{ steps.date-time-before.outputs.date-time }}
         date-time-after: ${{ steps.date-time-after.outputs.date-time }}
         date-time-after-tag: ${{ steps.date-time-after.outputs.date-time-tag }}
-  archive:
+        
+  archive-rel:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download Soggy build
         uses: actions/download-artifact@v3
         with:
-          name: soggy-exec
+          name: soggy-exec-rel
           
       - name: Download all dependencies
         run: |
-          7z x soggy_exec_only.7z
-          rm soggy_exec_only.7z
+          7z x soggy_exec_rel.7z
+          rm soggy_exec_rel.7z
           wget https://github.com/LDAsuku/soggy/raw/mistress/dispatch.py
           wget https://github.com/LDAsuku/soggy/raw/mistress/soggy_cat.png
           echo "mitmdump.exe -p 8080 -s \"proxy.py\"" >> proxy.bat
           wget https://snapshots.mitmproxy.org/9.0.1/mitmproxy-9.0.1-windows.zip
           unzip mitmproxy-9.0.1-windows.zip mitmdump.exe 
           rm mitmproxy-9.0.1-windows.zip
-          wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy.py
-          wget https://github.com/Grasscutters/Grasscutter/raw/development/proxy_config.py
+          wget https://github.com/phanhoang1366/soggy-autobuilds/raw/main/proxy.py
+          wget https://github.com/phanhoang1366/soggy-autobuilds/raw/main/proxy_config.py
           git clone https://codeberg.org/LDA_suku/soggy_resources.git resources
           
-      - name: Compress with  7-Zip Soggy Full version
-        run: 7z a soggy_full.7z * -mx9
+      - name: Compress with 7-Zip Soggy Full version (release)
+        run: 7z a soggy_full_rel.7z * -mx9
       
       - name: Upload Soggy full version
         uses: actions/upload-artifact@v3
         with:
-          name: soggy-7z-full
-          path: soggy_full.7z
+          name: soggy-7z-full-rel
+          path: soggy_full_rel.7z
           
-  release:
-    needs: [build, archive]
+  archive-debug:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download Soggy archive
+      - name: Download Soggy build
         uses: actions/download-artifact@v3
         with:
-          name: soggy-7z-full
+          name: soggy-exec-debug
+          
+      - name: Download all dependencies
+        run: |
+          7z x soggy_exec_debug.7z
+          rm soggy_exec_debug.7z
+          wget https://github.com/LDAsuku/soggy/raw/mistress/dispatch.py
+          wget https://github.com/LDAsuku/soggy/raw/mistress/soggy_cat.png
+          echo "mitmdump.exe -p 8080 -s \"proxy.py\"" >> proxy.bat
+          wget https://snapshots.mitmproxy.org/9.0.1/mitmproxy-9.0.1-windows.zip
+          unzip mitmproxy-9.0.1-windows.zip mitmdump.exe 
+          rm mitmproxy-9.0.1-windows.zip
+          wget https://github.com/phanhoang1366/soggy-autobuilds/raw/main/proxy.py
+          wget https://github.com/phanhoang1366/soggy-autobuilds/raw/main/proxy_config.py
+          git clone https://codeberg.org/LDA_suku/soggy_resources.git resources
+          
+      - name: Compress with 7-Zip Soggy Full version (release)
+        run: 7z a soggy_full_debug.7z * -mx9
       
-      - name: Download Soggy executable only
+      - name: Upload Soggy full version
+        uses: actions/upload-artifact@v3
+        with:
+          name: soggy-7z-full-debug
+          path: soggy_full_debug.7z
+          
+  release:
+    needs: [build, archive-rel, archive-debug]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Soggy archive (Release)
         uses: actions/download-artifact@v3
         with:
-          name: soggy-exec
-
+          name: soggy-7z-full-rel
+      
+      - name: Download Soggy executable only (Release)
+        uses: actions/download-artifact@v3
+        with:
+          name: soggy-exec-rel
+          
+      - name: Download Soggy archive (Debug)
+        uses: actions/download-artifact@v3
+        with:
+          name: soggy-7z-full-debug
+      
+      - name: Download Soggy executable only (Debug)
+        uses: actions/download-artifact@v3
+        with:
+          name: soggy-exec-debug
+          
       - name: Release
         run: |
           gh release create "m-${{ needs.build.outputs.date-time-after-tag }}" \
-          "soggy_full.7z" \
-          "soggy_exec_only.7z" \
+          "soggy_full_rel.7z" \
+          "soggy_exec_rel.7z" \
+          "soggy_full_debug.7z" \
+          "soggy_exec_debug.7z" \
           -n "Soggy built on ${{ needs.build.outputs.date-time-after }} started at ${{ needs.build.outputs.date-time-before }}" \
           -t "${{ needs.build.outputs.date-time-after }}"
         env:
