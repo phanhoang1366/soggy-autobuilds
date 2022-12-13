@@ -33,7 +33,7 @@ jobs:
         - name: Build time
           run: |
             cd soggy
-            cmake --build build -j8 --config Release
+            cmake --build build -j8 --config Release -- /Od
             cd build/Release/
             7z a soggy_exec_rel.7z * -mx9
 
