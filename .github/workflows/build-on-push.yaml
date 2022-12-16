@@ -30,6 +30,14 @@ jobs:
             cd soggy
             cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_CXX_FLAGS="/Od" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 
+        - name: Patch
+          shell: bash
+          run: |
+           cd soggy
+           sed '13a\string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")' CMakeLists.txt > CMakeLists2.txt
+           rm CMakeLists.txt
+           mv CMakeLists2.txt CMakeLists.txt
+
         - name: Build time
           run: |
             cd soggy
