@@ -1,0 +1,25 @@
+From beef17f188e7a91a277315cd1ee5ba6deeb0ba9a Mon Sep 17 00:00:00 2001
+From: phanhoang1366 <84622359+phanhoang1366@users.noreply.github.com>
+Date: Fri, 16 Dec 2022 19:58:39 +0700
+Subject: [PATCH] patch for no opt
+
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2e4c225..4d383c9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,6 +11,8 @@ if(NOT CMAKE_BUILD_TYPE)
+ 	set(CMAKE_BUILD_TYPE "Debug")
+ endif()
+ 
++string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
++
+ find_package(Protobuf REQUIRED)
+ find_package(Lua REQUIRED)
+ find_package(Threads REQUIRED)
+-- 
+2.37.2.windows.2
+
