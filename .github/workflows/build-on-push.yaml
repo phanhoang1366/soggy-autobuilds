@@ -22,14 +22,6 @@ jobs:
           shell: bash
           run: echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
 
-        - name: Install dependencies (vcpkg)
-          run: vcpkg install protobuf lua[cpp]:x64-windows
-
-        - name: Prepare for build (No optimization)
-          run: |
-            cd soggy
-            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_CXX_FLAGS="/Od" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
-
         - name: Patch
           shell: bash
           run: |
@@ -37,6 +29,14 @@ jobs:
            sed '13a\string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")' CMakeLists.txt > CMakeLists2.txt
            rm CMakeLists.txt
            mv CMakeLists2.txt CMakeLists.txt
+
+        - name: Install dependencies (vcpkg)
+          run: vcpkg install protobuf lua[cpp]:x64-windows
+
+        - name: Prepare for build (No optimization)
+          run: |
+            cd soggy
+            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_CXX_FLAGS="/Od" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 
         - name: Build time
           run: |
