@@ -34,7 +34,7 @@ jobs:
           run: |
             cd soggy
             cmake --build build -j8 --config Debug -- /p:DebugSymbols=false /p:DebugType=None
-            cd build/Release/
+            cd build/Debug/
             7z a soggy_exec_rel.7z * -mx9
 
         - name: Get current date & time after build
