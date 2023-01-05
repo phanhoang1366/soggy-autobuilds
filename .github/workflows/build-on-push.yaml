@@ -48,7 +48,7 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: soggy-exec-rel
-            path: soggy/build/Release/soggy_exec_rel.7z
+            path: soggy/build/Debug/soggy_exec_rel.7z
 
     outputs:
         date-time-before: ${{ steps.date-time-before.outputs.date-time }}
