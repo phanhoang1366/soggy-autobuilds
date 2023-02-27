@@ -36,8 +36,8 @@ jobs:
           shell: msys2 {0}
           run: |
             cd soggy
-#           cmake -B build -G "Unix Makefiles"
             cmake -B build -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=mingw64.cmake
+#           cmake -B build -G "Unix Makefiles"
 #           cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="/Od" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 
         - name: Build time
