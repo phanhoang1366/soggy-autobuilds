@@ -46,7 +46,16 @@ jobs:
           run: |
             cd soggy
             cmake --build build -j8
-            cd build/
+
+        - name: Bundling everything up
+          run: |
+            cd soggy/build/
+            Copy-Item -Path 'd:/a/_temp/msys64/mingw64/bin/libgcc_s_seh-1.dll', \
+            'd:/a/_temp/msys64/mingw64/bin/libprotobuf.dll', \
+            'd:/a/_temp/msys64/mingw64/bin/libstdc++-6.dll', \
+            'd:/a/_temp/msys64/mingw64/bin/libwinpthread-1.dll', \
+            'd:/a/_temp/msys64/mingw64/bin/lua54.dll', \
+            'd:/a/_temp/msys64/mingw64/bin/zlib1.dll' -Destination ./
             7z a soggy_exec_rel.7z * -mx9
 
         - name: Get current date & time after build
