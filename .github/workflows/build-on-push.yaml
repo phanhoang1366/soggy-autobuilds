@@ -11,6 +11,11 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+        - name: Set up MSYS2
+          uses: msys2/setup-msys2@v2
+          with:
+            msys2-version: 'x86_64'
+            
         - name: Checkout repository
           uses: actions/checkout@v3
           with:
@@ -22,19 +27,24 @@ jobs:
           shell: bash
           run: echo date-time=$(date +'%Y-%m-%d %H:%M') >> $GITHUB_OUTPUT
 
-        - name: Install dependencies (vcpkg)
-          run: vcpkg install protobuf lua[cpp]:x64-windows
+        - name: Install dependencies (vcpkg/pacman)
+          shell: msys2 {0}
+#         run: vcpkg install protobuf lua[cpp]:x64-windows
+          run: pacman -S ${MINGW_PACKAGE_PREFIX}-{toolchain,cmake,protobuf,lua}
 
         - name: Prepare for build (No optimization)
+          shell: msys2 {0}
           run: |
             cd soggy
-            cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="/Od" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
+            cmake -B build -G "Unix Makefiles"
+#           cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_FLAGS="/Od" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 
         - name: Build time
+          shell: msys2 {0}
           run: |
             cd soggy
-            cmake --build build -j8 --config Debug -- /p:DebugSymbols=false /p:DebugType=None
-            cd build/Debug/
+            cmake --build build -j8
+            cd build/
             7z a soggy_exec_rel.7z * -mx9
 
         - name: Get current date & time after build
@@ -48,7 +58,7 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: soggy-exec-rel
-            path: soggy/build/Debug/soggy_exec_rel.7z
+            path: soggy/build/soggy_exec_rel.7z
 
     outputs:
         date-time-before: ${{ steps.date-time-before.outputs.date-time }}
