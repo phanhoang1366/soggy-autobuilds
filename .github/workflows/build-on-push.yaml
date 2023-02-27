@@ -32,7 +32,7 @@ jobs:
 #         run: vcpkg install protobuf lua[cpp]:x64-windows
           run: |
            pacman -S ${MINGW_PACKAGE_PREFIX}-{toolchain,cmake,protobuf,lua} --noconfirm
-           pacman -S make
+           pacman -S make --noconfirm
 
         - name: Prepare for build (No optimization)
           shell: msys2 {0}
