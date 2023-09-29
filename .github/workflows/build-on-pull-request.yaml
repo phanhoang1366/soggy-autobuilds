@@ -76,8 +76,7 @@ jobs:
         run: |
           7z x soggy_exec_rel.7z
           rm soggy_exec_rel.7z
-          wget https://github.com/LDAsuku/soggy/raw/mistress/dispatch.py
-          wget https://github.com/LDAsuku/soggy/raw/mistress/soggy_cat.png
+          wget https://github.com/LDAsuku/soggy/raw/mistress/soggy.cfg
           echo "mitmdump.exe -p 8080 -s \"proxy.py\"" >> proxy.bat
           wget https://snapshots.mitmproxy.org/9.0.1/mitmproxy-9.0.1-windows.zip
           unzip mitmproxy-9.0.1-windows.zip mitmdump.exe 
