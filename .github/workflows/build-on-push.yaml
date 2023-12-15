@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Soggy build
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: soggy-exec-rel
           
@@ -110,12 +110,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Soggy archive (Release)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: soggy-7z-full-rel
       
       - name: Download Soggy executable only (Release)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: soggy-exec-rel
                  
