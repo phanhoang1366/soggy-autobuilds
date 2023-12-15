@@ -63,7 +63,7 @@ jobs:
             echo date-time-tag=$(date +'%Y-%m-%d-%H-%M') >> $GITHUB_OUTPUT
 
         - name: Upload Soggy Release
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: soggy-exec-rel
             path: soggy/build/soggy_exec_rel.7z
@@ -99,7 +99,7 @@ jobs:
         run: 7z a soggy_full_rel.7z * -mx9
       
       - name: Upload Soggy full version
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: soggy-7z-full-rel
           path: soggy_full_rel.7z
